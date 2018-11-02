@@ -1,22 +1,54 @@
+/**
+ * Copyright © 2018 Maple Yin. All rights reserved.
+ *
+ * An animation item
+ *
+ * @summary An animation item
+ * @author Maple Yin<i@maple.im>
+ *
+ * Created at     : 2018-11-02 15:36:48 
+ * Last modified  : 2018-11-02 16:28:31
+ */
+
 import { AnimationStage } from "./AnimationStage";
 import { AnimationProperty } from "./AnimationProperty";
-import * as PIXI from "pixi.js"
+
+export * from "./AnimationProperty";
 
 type AnimationStageDefinedBlock = (lastOffset: number, editProperty: AnimationProperty) => number
 
-export class AnimateItem {
+export interface AnimationObject {
+    update(property: AnimationProperty): void
+}
 
-    readonly item: PIXI.Text | PIXI.Sprite | PIXI.Graphics
+export class AnimateItem<T extends AnimationObject> {
 
-    private stageList: AnimationStage[] = []
+    readonly item: T
 
-    private start: number = 0
-    private end: number = 0
+    readonly stageList: AnimationStage[] = []
+
+    private _start: number = 0
+    get start() {
+        return this._start
+    }
+
+    private _end: number = 0
+    get end() {
+        return this._end
+    }
 
     isRemoved: boolean = true
 
-    constructor(item: PIXI.Text | PIXI.Sprite | PIXI.Graphics) {
+    constructor(item: T, startIndex: number = 0) {
         this.item = item;
+
+        // create default stage
+        this.addStage((lastOffset, editProperty)=>{
+            return startIndex
+        });
+        this.addStage((lastOffset, editProperty) => {
+            return lastOffset + 300
+        })
     }
 
     /**
@@ -46,29 +78,36 @@ export class AnimateItem {
         if (index == -1) {
             this.stageList.push(stage)  
             // update end offset 
-            this.end = stage.offset
+            this._end = stage.offset
         } else {
             this.stageList.splice(index, 0, stage);
         }
     }
 
+    /**
+     * update current property
+     * 
+     * @param offset 
+     */
     upadte(offset: number) {
-        // if (this.needRemove(offset)) {
-        //     return
-        // }
 
-        // let index = this.range.findIndex((value) => {
-        //     return offset - value < 0
-        // })
+        if (this.needRemove(offset)) {
+            return
+        }
 
-        // index -= 1
+        let index = this.stageList.findIndex((stage) => {
+            return offset < stage.offset 
+        })
 
-        // let start = this.range[index]
-        // let end = this.range[index + 1]
+        index -= 1
 
-        // let ratio = (offset - start) / (end - start)
+        let startStage = this.stageList[index]
+        let endStage = this.stageList[index + 1]
 
-        // this.updateProperty(ratio, index)
+        let property = startStage.to(endStage, offset)
+
+        // apply to item
+        this.item.update(property)
     }
 
     needRemove(offset: number) {
@@ -77,17 +116,5 @@ export class AnimateItem {
         } else {
             return true
         }
-    }
-
-    private updateProperty(ratio: number, start: number) {
-        // let startProperty = this.properties[start];
-        // let endProperty = this.properties[start + 1];
-        // if (!startProperty || !endProperty) {
-        //     return
-        // }
-        // let computProperties = endProperty.comput(startProperty, ratio);
-        // computProperties.forEach((prop) => {
-        //     this.element.style[prop.name] = prop.value
-        // })
     }
 }

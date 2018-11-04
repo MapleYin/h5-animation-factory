@@ -5,20 +5,23 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 
-import { PageScrollAnimate, IElementAnimateInit } from "./animation/pageScrollAnimate";
-
-import * as PIXI from "pixi.js"
+import {
+    CanvasScrollAnimation, 
+    CanvasAnimationItem
+} from "./animation/CanvasScrollAnimate";
 
 @Component
 export default class LiveView extends Vue {
-    @Prop() animateDefined!: IElementAnimateInit[]
-    private pageScrollAnimate!: PageScrollAnimate
+    readonly pageScrollAnimate: CanvasScrollAnimation
 
-    @Watch('animateDefined')
-    onChildChanged(val: IElementAnimateInit[], oldVal: IElementAnimateInit[]) { 
+    constructor() {
+        super()
+        this.pageScrollAnimate = new CanvasScrollAnimation()
     }
 
+
     mounted() {
+        this.pageScrollAnimate.start(this.$el)
     }
 }
 </script>

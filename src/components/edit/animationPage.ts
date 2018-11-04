@@ -1,4 +1,4 @@
-export default class AnimationPage {
+export class AnimationPage {
     readonly name: string
 
     constructor(name: string) {

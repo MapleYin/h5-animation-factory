@@ -1,5 +1,5 @@
 <template>
-
+    <section class="container"></section>
 </template>
 
 <script lang="ts">
@@ -13,5 +13,7 @@ export default class AnimationItemList extends Vue {
 
 
 <style scoped>
-
+.container {
+    background: #f7f7f7;
+}
 </style>

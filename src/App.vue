@@ -1,7 +1,7 @@
 <template>
     <section id="app">
-        <LiveView class="live-view" :animateDefined="animateDefined"></LiveView>
-        <EditView class="edit-view"></EditView>
+        <LiveView class="live-view" ref="LiveView"></LiveView>
+        <EditView class="edit-view" ref="EditView"></EditView>
     </section>
 </template>
 
@@ -20,23 +20,33 @@ export default class App extends Vue {
     private animateDefined: string[] = []
     
     mounted() {
+        let liveView = this.$refs['LiveView'] as LiveView
+        let editView = this.$refs['EditView'] as EditView
+        editView.setupPageScrollAnimation(liveView.pageScrollAnimate)
     }
 }
 </script>
 
 <style>
 
+html, body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+
 #app {
     display: flex;
     justify-content: stretch;
+    height: 100%;
 }
 
 .live-view {
     width: 375px;
     height: 667px;
-    border: solid 1px #cccccc;
     flex-grow: 0;
     flex-shrink: 1;
+    margin: 10px;
 }
 
 .edit-view {

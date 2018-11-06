@@ -43,10 +43,9 @@ html, body {
 
 .live-view {
     width: 375px;
-    height: 667px;
     flex-grow: 0;
     flex-shrink: 1;
-    margin: 10px;
+    padding: 10px;
 }
 
 .edit-view {

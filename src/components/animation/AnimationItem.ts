@@ -7,7 +7,7 @@
  * @author Maple Yin<i@maple.im>
  *
  * Created at     : 2018-11-02 15:36:48 
- * Last modified  : 2018-11-02 16:28:31
+ * Last modified  : 2018-11-06 17:53:56
  */
 
 import { AnimationStage } from "./AnimationStage";
@@ -15,30 +15,71 @@ import { AnimationProperty } from "./AnimationProperty";
 
 export * from "./AnimationProperty";
 
-type AnimationStageDefinedBlock = (lastOffset: number, editProperty: AnimationProperty) => number
+type AnimationStageDefinedBlock = (lastOffset: number, editProperty: AnimationProperty) => number;
 
 export interface AnimationObject {
     update(property: AnimationProperty): void
 }
 
-export class AnimateItem<T extends AnimationObject> {
 
+/**
+ * An animation item
+ *
+ * @export
+ * @class AnimateItem
+ * @template T
+ */
+export class AnimationItem<T extends AnimationObject> {
+
+    /**
+     * An animation object
+     *
+     * @type {T : AnimationObject} confirm to `AnimationObject`
+     * @memberof AnimateItem
+     */
     readonly item: T
 
+    
+    /**
+     * Animation stage of this animation item
+     *
+     * @type {AnimationStage[]} animation stage
+     * @memberof AnimateItem
+     */
     readonly stageList: AnimationStage[] = []
 
     private _start: number = 0
+
+    /**
+     * Start offset of this animation item
+     *
+     * @readonly
+     * @memberof AnimateItem
+     */
     get start() {
         return this._start
     }
 
     private _end: number = 0
+
+    /**
+     * End offset of this animation item
+     *
+     * @readonly
+     * @memberof AnimateItem
+     */
     get end() {
         return this._end
     }
 
     isRemoved: boolean = true
 
+    /**
+     *Creates an instance of AnimateItem.
+     * @param {T} item
+     * @param {number} [startIndex=0]
+     * @memberof AnimateItem
+     */
     constructor(item: T, startIndex: number = 0) {
         this.item = item;
 
@@ -53,8 +94,9 @@ export class AnimateItem<T extends AnimationObject> {
 
     /**
      * create new animate stage
-     * 
-     * @param defineBlock make change of property
+     *
+     * @param {AnimationStageDefinedBlock} defineBlock make change of property
+     * @memberof AnimateItem
      */
     addStage(defineBlock: AnimationStageDefinedBlock) {
         // get last stage of create a new one
@@ -85,9 +127,10 @@ export class AnimateItem<T extends AnimationObject> {
     }
 
     /**
-     * update current property
-     * 
-     * @param offset 
+     * Update current property
+     *
+     * @param {number} offset
+     * @memberof AnimateItem
      */
     upadte(offset: number) {
 
@@ -110,11 +153,19 @@ export class AnimateItem<T extends AnimationObject> {
         this.item.update(property)
     }
 
-    needRemove(offset: number) {
+    
+    /**
+     * Check if need remove
+     *
+     * @param {number} offset current offset
+     * @returns {boolean} need remove
+     * @memberof AnimateItem
+     */
+    needRemove(offset: number): boolean {
         if (offset > this.end || offset < this.start) {
-            return false
-        } else {
             return true
+        } else {
+            return false
         }
     }
 }

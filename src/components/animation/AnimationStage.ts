@@ -17,11 +17,18 @@ export class AnimationStage {
     readonly offset: number
     readonly property: AnimationProperty
 
+    
     constructor(offset: number, property: AnimationProperty = new AnimationProperty()) {
         this.offset = offset
         this.property = property
     }
 
+    /**
+     * calculate the property to the stage at current offset
+     * 
+     * @param stage target stage
+     * @param offset current offset
+     */
     to(stage: AnimationStage, offset: number): AnimationProperty {
         let taget = stage.property
         let start = this.property
@@ -39,7 +46,7 @@ export class AnimationStage {
         return current
     }
 
-    private result(startValue: number, targetValue: number, ratio: number) {
+    private result(startValue: number, targetValue: number, ratio: number): number {
         return (targetValue - startValue) * ratio + startValue
     }
 }

@@ -1,5 +1,7 @@
 <template>
-    <section class="container"></section>
+    <section class="container">
+        <div class="warppar" ref="warppar"></div>
+    </section>
 </template>
 
 <script lang="ts">
@@ -21,11 +23,19 @@ export default class LiveView extends Vue {
 
 
     mounted() {
-        this.pageScrollAnimate.start(this.$el)
+        this.pageScrollAnimate.start(this.$refs['warppar'] as HTMLElement)
     }
 }
 </script>
 
 <style scoped>
-
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.warppar {
+    width: 375px;
+    height: 667px;
+}
 </style>

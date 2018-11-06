@@ -1,8 +1,8 @@
 <template>
     <section class="container">
         <div class="front">
-            <AnimationPageList class="page-list"></AnimationPageList>
-            <AnimationItemList class="item-list"></AnimationItemList>
+            <AnimationPageList class="page-list" @page-selected="pageSelected" :pageList="pageList"></AnimationPageList>
+            <AnimationItemList class="item-list" @add-item="addAnimationItem"></AnimationItemList>
         </div>
         <div class="overlay">
             <AniamtionEdit class="item-edit"></AniamtionEdit>
@@ -21,7 +21,8 @@ import {
     CanvasScrollAnimation, 
     CanvasAnimationItem
 } from "./animation/CanvasScrollAnimate";
-import { AnimateItem } from '@/components/animation/AnimateItem';
+import { AnimationItem } from '@/components/animation/AnimationItem';
+
 @Component({
     components: {
         AniamtionEdit,
@@ -31,13 +32,27 @@ import { AnimateItem } from '@/components/animation/AnimateItem';
 })
 export default class EditView extends Vue {
     private pageScrollAnimate!: CanvasScrollAnimation
+    private pageList: any[]= []
 
     setupPageScrollAnimation(animation: CanvasScrollAnimation) {
         this.pageScrollAnimate = animation
+        let url = this.pageScrollAnimate.screenShort()
+        this.pageList.push({
+            url: url
+        })
     }
 
-    addAnimationItem(item: AnimateItem<CanvasAnimationItem>) {
-        this.pageScrollAnimate.addAnimateItem(item)
+    addAnimationItem(itemList: any[]) {
+        itemList.forEach(item => {
+            this.pageScrollAnimate.addAnimationItem(item.url).then(()=>{
+                this.pageScrollAnimate.updateOffet(0)
+            })
+        })
+        
+    }
+
+    pageSelected(index: number) {
+        console.log(index);
     }
 }
 
@@ -64,7 +79,7 @@ export default class EditView extends Vue {
 }
 
 .item-list {
-
+    flex-grow: 1;
 }
 
 .overlay {
@@ -73,6 +88,11 @@ export default class EditView extends Vue {
     width: 100%;
     left: 100%;
     top: 0;
+    transition: left 1.5s;
+}
+
+.overlay.active {
+    left: 0;
 }
 
 .item-edit {

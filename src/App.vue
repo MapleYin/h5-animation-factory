@@ -17,8 +17,6 @@ import EditView from "./components/EditView.vue";
     }
 })
 export default class App extends Vue {
-    private animateDefined: string[] = []
-    
     mounted() {
         let liveView = this.$refs['LiveView'] as LiveView
         let editView = this.$refs['EditView'] as EditView

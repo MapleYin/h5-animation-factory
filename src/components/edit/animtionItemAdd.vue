@@ -12,7 +12,7 @@
                 </el-upload> -->
                 <section class="items">
                     <div class="item" v-for="(item, index) in imageList" v-bind:key="item.url" @click="selectedItem(index)">
-                        <img :src="item.url" :alt="item.name">
+                        <img :src="item" :alt="item.name">
                     </div>
                 </section>
                 <!-- <el-pagination class="pagination" 
@@ -41,11 +41,11 @@ export default class AnimationItemAdd extends Vue {
     dialogVisible: boolean = false
     loading = false
 
-    imageList: ImageItem[] = []
-    dataList: ImageItem[] = []
+    imageList: string[] = []
+    dataList: string[] = []
     pageSize: number = 20
 
-    private currentSelectedItem: ImageItem[] = []
+    private currentSelectedItem: string[] = []
 
 
     private opened() {
@@ -54,12 +54,8 @@ export default class AnimationItemAdd extends Vue {
             this.loading = false
             this.dataList = res
             this.imageList = res.map(item=>{
-                return {
-                    url : `${item.url}_thumbnail`,
-                    name: item.name
-                }
+                return `${item}_thumbnail`
             })
-            // this.pageChange(1)
         }).catch(err=>{
             this.loading = false
             this.$message.error('图片列表获取错误');
@@ -71,7 +67,8 @@ export default class AnimationItemAdd extends Vue {
         console.log(event)
         let file = event.file as File
         resourceManager.upload(file).then((res)=>{
-            this.imageList.push(res)
+            this.dataList.push(res)
+            this.imageList.push(`${res}_thumbnail`)
         }).catch((err: any)=>{
             this.$message.error('上传图片错误');
         })

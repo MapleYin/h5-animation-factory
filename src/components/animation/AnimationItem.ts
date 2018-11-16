@@ -7,7 +7,7 @@
  * @author Maple Yin<i@maple.im>
  *
  * Created at     : 2018-11-02 15:36:48 
- * Last modified  : 2018-11-06 17:53:56
+ * Last modified  : 2018-11-07 18:36:32
  */
 
 import { AnimationStage } from "./AnimationStage";
@@ -16,6 +16,7 @@ import { AnimationProperty } from "./AnimationProperty";
 export * from "./AnimationProperty";
 
 type AnimationStageDefinedBlock = (lastOffset: number, editProperty: AnimationProperty) => number;
+
 
 export interface AnimationObject {
     update(property: AnimationProperty): void
@@ -167,5 +168,10 @@ export class AnimationItem<T extends AnimationObject> {
         } else {
             return false
         }
+    }
+
+
+    editStage(atIndex: number) {
+        let stage = this.stageList[atIndex]
     }
 }

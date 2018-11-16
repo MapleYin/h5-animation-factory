@@ -8,7 +8,7 @@
  * @author Maple Yin <i@maple.im>
  *
  * Created at     : 2018-11-06 15:59:25 
- * Last modified  : 2018-11-06 16:49:26
+ * Last modified  : 2018-11-06 22:13:22
  */    
  -->
 <template>
@@ -31,7 +31,6 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue, Emit } from 'vue-property-decorator';
 import AnimationPageEdit from './AnimationPageEdit.vue'
-import { AnimationPage } from "./AnimationPage";
 
 @Component({
     components: {

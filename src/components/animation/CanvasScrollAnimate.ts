@@ -7,7 +7,7 @@
  * @author Maple Yin<i@maple.im>
  *
  * Created at     : 2018-11-02 15:39:42 
- * Last modified  : 2018-11-06 19:04:25
+ * Last modified  : 2018-11-07 16:55:03
  */
 
 import { AnimationItem, AnimationObject, AnimationProperty } from "./AnimationItem";
@@ -23,10 +23,19 @@ import * as PIXI from "pixi.js"
  * @implements {AnimationObject}
  */
 export class CanvasAnimationItem extends PIXI.Sprite implements AnimationObject {
+
+    private resolution: number
+
+    constructor(texture: PIXI.Texture, resolution: number = 1) {
+        super(texture)
+        this.resolution = resolution
+        this.scale.set(1 / resolution)
+    }
+        
     update(property: AnimationProperty) {
         this.x = property.x
         this.y = property.y
-        this.scale.set(property.scale, property.scale)
+        this.scale.set(property.scale / this.resolution)
         this.alpha = property.alpha
         this.rotation = property.rotate
     }
@@ -44,11 +53,15 @@ export class CanvasScrollAnimation {
     /**
      * Animation max offset
      * 
-     * @private
-     * 
+     * @readonly
+     * @type {number}
      * @memberOf CanvasScrollAnimation
      */
-    private maxOffset = 0
+    get maxOffset() : number {
+        return this._maxOffset
+    }
+    private _maxOffset = 0
+    
 
     
     /**
@@ -87,7 +100,6 @@ export class CanvasScrollAnimation {
      */
     constructor() {
         this.app.renderer.autoResize = true;
-        // this.app.renderer.backgroundColor = 0xffffff
     }
 
     
@@ -98,7 +110,7 @@ export class CanvasScrollAnimation {
      */
     start(containerElement: HTMLElement) {
         this.animateItems.forEach(item => {
-            this.maxOffset = Math.max(this.maxOffset, item.end)
+            this._maxOffset = Math.max(this.maxOffset, item.end)
         })
         
         this.resize(containerElement.clientWidth, containerElement.clientHeight)
@@ -119,39 +131,19 @@ export class CanvasScrollAnimation {
     }
 
 
-
     /**
      * Add new animation item
      * 
-     * @param {AnimateItem<CanvasAnimationItem>} item 
+     * @param {CanvasAnimationItem} item 
+     * @param {number} [offset=this.currentOffset] 
      * 
      * @memberOf CanvasScrollAnimation
      */
-    addAnimationItem(item: AnimationItem<CanvasAnimationItem>): Promise<number>
-    addAnimationItem(item: string): Promise<number>
-    addAnimationItem(item: any): Promise<number> {
-
-        return new Promise<number>((resolve, reject) => {
-            if (typeof item == 'string' ) {
-                PIXI.loader.add(item,item, {
-                    loadType: PIXI.loaders.Resource.LOAD_TYPE.IMAGE,
-                    xhrType: PIXI.loaders.Resource.XHR_RESPONSE_TYPE.BLOB
-                }).load(() => {
-                    let resource = PIXI.loader.resources[item]
-                    let canvasItem = new CanvasAnimationItem(resource.texture)
-                    canvasItem.width *= 0.5
-                    canvasItem.height *= 0.5
-                    let animtionItem = new AnimationItem(canvasItem)
-                    let index = this.animateItems.push(animtionItem) -1
-                    resolve(index)
-                })
-            } else if (item instanceof AnimationItem) {
-                let index = this.animateItems.push(item) - 1
-                resolve(index)
-            } else {
-                reject()
-            }
-        })
+    addAnimationItem(item: CanvasAnimationItem, offset: number = this.currentOffset) {
+        let animationItem = new AnimationItem(item, offset)
+        this._maxOffset = Math.max(this._maxOffset, animationItem.end)
+        this.animateItems.push(animationItem)
+        this.updateOffet(this.currentOffset)
     }
 
 

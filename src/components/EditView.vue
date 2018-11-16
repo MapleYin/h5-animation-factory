@@ -1,59 +1,45 @@
 <template>
     <section class="container">
-        <div class="front">
-            <AnimationPageList class="page-list" @page-selected="pageSelected" :pageList="pageList"></AnimationPageList>
-            <AnimationItemList class="item-list" @add-item="addAnimationItem"></AnimationItemList>
-        </div>
-        <div class="overlay">
-            <AniamtionEdit class="item-edit"></AniamtionEdit>
-        </div>
+        <AnimationTimeline class="time-line" :items-range="animationCreateManager.timeLineItemList" @offset-changed="updateOffset"></AnimationTimeline>
+        <AnimtionItemAdd class="plus" @add-item="addItem"></AnimtionItemAdd>
     </section>
 </template>
 
 <script lang="ts">
 
-import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
-import AniamtionEdit from "./edit/AnimationEdit.vue";
-import AnimationPageList from "./edit/AnimationPageList.vue";
-import AnimationItemList from "./edit/AnimationItemList.vue";
+import { Component, Prop, Watch, Vue, Emit } from 'vue-property-decorator';
 
+import AnimtionItemAdd from '@/components/edit/AnimtionItemAdd.vue'
+import AnimationTimeline from '@/components/edit/timeline/AnimationTimeline.vue'
 import { 
     CanvasScrollAnimation, 
     CanvasAnimationItem
 } from "./animation/CanvasScrollAnimate";
-import { AnimationItem } from '@/components/animation/AnimationItem';
+
+import { AnimationCreateManager } from '@/components/edit/AnimationCreateManager'
 
 @Component({
     components: {
-        AniamtionEdit,
-        AnimationPageList,
-        AnimationItemList
+        AnimtionItemAdd,
+        AnimationTimeline
     }
 })
 export default class EditView extends Vue {
-    private pageScrollAnimate!: CanvasScrollAnimation
-    private pageList: any[]= []
+
+    private animationCreateManager = new AnimationCreateManager()
 
     setupPageScrollAnimation(animation: CanvasScrollAnimation) {
-        this.pageScrollAnimate = animation
-        let url = this.pageScrollAnimate.screenShort()
-        this.pageList.push({
-            url: url
-        })
+        this.animationCreateManager.setup(animation)
     }
 
-    addAnimationItem(itemList: any[]) {
-        itemList.forEach(item => {
-            this.pageScrollAnimate.addAnimationItem(item.url).then(()=>{
-                this.pageScrollAnimate.updateOffet(0)
-            })
-        })
-        
+    addItem(itemList: string[]) {
+        this.animationCreateManager.addItem(itemList)
     }
 
-    pageSelected(index: number) {
-        console.log(index);
+    updateOffset(offsetRatio: number) {
+        this.animationCreateManager.updateOffset(offsetRatio)
     }
+
 }
 
 </script>
@@ -64,40 +50,13 @@ export default class EditView extends Vue {
     position: relative;
     overflow: hidden;
 }
-
-.front {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: stretch;
-}
-
-.page-list {
-    width: 130px;
-    border-right: solid 1px #B4B1B4;
-    overflow-y: scroll;
-}
-
-.item-list {
-    flex-grow: 1;
-}
-
-.overlay {
+.plus {
     position: absolute;
-    height: 100%;
-    width: 100%;
-    left: 100%;
-    top: 0;
-    transition: left 1.5s;
+    right: 20px;
+    top: 20px;
 }
 
-.overlay.active {
-    left: 0;
-}
-
-.item-edit {
-    width: 80%;
+.time-line {
     height: 100%;
 }
 </style>
-

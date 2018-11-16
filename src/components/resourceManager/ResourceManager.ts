@@ -7,7 +7,7 @@
  * @author Maple Yin <i@maple.im>
  *
  * Created at     : 2018-11-06 16:03:02 
- * Last modified  : 2018-11-06 18:30:02
+ * Last modified  : 2018-11-06 22:50:14
  */
 
 const COS = require('cos-js-sdk-v5')
@@ -37,12 +37,12 @@ export class ResourceManager {
     /**
      * Image list that can use
      * 
-     * @returns {Promise<ImageItem[]>}
+     * @returns {Promise<string[]>}
      * 
      * @memberOf ResourceManager
      */
-    fileList(): Promise<ImageItem[]> {
-        return new Promise<ImageItem[]>((resolve, reject)=>{
+    fileList(): Promise<string[]> {
+        return new Promise<string[]>((resolve, reject)=>{
             this.cos.getBucket({
                 Bucket: Bucket, 
                 Region: Region,
@@ -51,10 +51,7 @@ export class ResourceManager {
                     reject(err)
                 } else {
                     let listImage = data.Contents.map((item: any)=>{
-                        return {
-                            url: `${Host}/${item.Key}`,
-                            name: item.Key
-                        }
+                        return `${Host}/${item.Key}`
                     })
                     resolve(listImage)
                 }
@@ -69,12 +66,12 @@ export class ResourceManager {
      * 
      * @param {File} file file to upload
      * @param {(progressData: any)=>void} [progress] upload progress callback
-     * @returns {Promise<ImageItem>} 
+     * @returns {Promise<string>} 
      * 
      * @memberOf ResourceManager
      */
-    upload(file: File, progress?: (progressData: any)=>void): Promise<ImageItem> {
-        return new Promise<ImageItem>((resolve, reject)=>{
+    upload(file: File, progress?: (progressData: any)=>void): Promise<string> {
+        return new Promise<string>((resolve, reject)=>{
             this.cos.putObject({
                 Bucket: Bucket,
                 Region: Region,
@@ -90,10 +87,7 @@ export class ResourceManager {
                 if(err || data.statusCode != 200) {
                     reject(err)
                 } else {
-                    resolve({
-                        name: file.name,
-                        url: `${Host}/${file.name}_thumbnail`,
-                    })
+                    resolve(`${Host}/${file.name}`)
                 }
             })
         })
